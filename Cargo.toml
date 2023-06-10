@@ -1,0 +1,13 @@
+[package]
+name = "asdf"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "asdf"
+
+[[bin]]
+name = "asdf"
+
+[dependencies]
+clap = { version = "4.3.3", features = ["cargo", "derive", "env"] }
