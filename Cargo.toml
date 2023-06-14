@@ -11,3 +11,4 @@ name = "asdf"
 
 [dependencies]
 clap = { version = "4.3.3", features = ["cargo", "derive", "env"] }
+git2 = "0.17.2"
