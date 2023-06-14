@@ -11,6 +11,9 @@ pub use commands::Commands;
 pub struct Cli {
   #[command(subcommand)]
   pub command: Commands,
+
+  #[command(flatten, next_help_heading = "Environment Variables")]
+  pub envs: options::Envs,
 }
 
 pub struct Exit {

@@ -15,7 +15,7 @@ pub struct ListCommandOptions {
   pub command: Option<ListCommands>,
 
   #[command(flatten)]
-  pub list: PluginArgs,
+  pub list: Option<PluginArgs>,
 }
 
 #[derive(Subcommand)]

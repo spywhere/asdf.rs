@@ -1,3 +1,3 @@
 pub mod cli;
 
-mod cmd;
+pub mod cmd;
