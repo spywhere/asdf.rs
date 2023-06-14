@@ -2,7 +2,7 @@ use clap::Subcommand;
 
 use crate::cli::options::*;
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Clone)]
 pub enum Commands {
   // Plugin Management //
 

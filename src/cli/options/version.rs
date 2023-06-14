@@ -1,14 +1,14 @@
 use clap::{Args, Subcommand};
 use crate::cli::options::{PluginArgs, PackageArgs};
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct CurrentOptions {
   /// Plugin name
   #[arg(value_name = "name")]
   pub name: Option<String>,
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct ListCommandOptions {
   #[command(subcommand)]
@@ -18,11 +18,34 @@ pub struct ListCommandOptions {
   pub list: Option<PluginArgs>,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Clone)]
 pub enum ListCommands {
   /// List all versions of a package
   #[command()]
   All(PluginArgs),
+}
+
+use crate::cmd::{
+  ListOptions,
+  ListAllOptions
+};
+
+impl From<PluginArgs> for ListAllOptions {
+  fn from(args: PluginArgs) -> Self {
+    Self {
+      plugin: args.name,
+      version: args.version,
+    }
+  }
+}
+
+impl From<PluginArgs> for ListOptions {
+  fn from(args: PluginArgs) -> Self {
+    Self {
+      plugin: Some(args.name),
+      version: args.version,
+    }
+  }
 }
 
 pub type GlobalOptions = PackageArgs;

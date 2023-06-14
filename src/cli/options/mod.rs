@@ -1,6 +1,6 @@
 use clap::Args;
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct PluginArgs {
   /// Plugin name
   #[arg(value_name = "name")]
@@ -11,7 +11,7 @@ pub struct PluginArgs {
   pub version: Option<String>,
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct PackageArgs {
   /// Plugin name
   #[arg(value_name = "name")]

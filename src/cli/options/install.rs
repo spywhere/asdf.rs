@@ -4,14 +4,14 @@ use crate::cli::options::{PluginArgs, PackageArgs};
 
 pub type WhereOptions = PluginArgs;
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct WhichOptions {
   /// Command name
   #[arg(value_name = "command")]
   pub command: String,
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct ExecOptions {
   /// Command name
   #[arg(value_name = "command")]
@@ -22,7 +22,7 @@ pub struct ExecOptions {
   pub args: Vec<String>,
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct EnvOptions {
   /// Command name
   #[arg(value_name = "command")]
@@ -35,7 +35,7 @@ pub struct EnvOptions {
 
 pub type ReshimOptions = PackageArgs;
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct ShimVersionsOptions {
   /// Command name
   #[arg(value_name = "command")]

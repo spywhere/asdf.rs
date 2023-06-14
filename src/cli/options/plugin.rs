@@ -1,13 +1,13 @@
 use clap::{Args, Subcommand};
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct PluginOptions {
   #[command(subcommand)]
   pub command: Option<PluginCommands>,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Clone)]
 pub enum PluginCommands {
   /// Add a plugin from the plugin repository or from the given repository URL
   #[command()]
@@ -23,7 +23,7 @@ pub enum PluginCommands {
   Update(PluginUpdateCommandOptions),
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct PluginAddOptions {
   /// Plugin name
   #[arg(value_name = "name")]
@@ -34,7 +34,7 @@ pub struct PluginAddOptions {
   pub git_url: Option<String>,
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct PluginListCommandOptions {
   #[command(subcommand)]
@@ -49,21 +49,21 @@ pub struct PluginListCommandOptions {
   pub refs: bool,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Clone)]
 pub enum PluginListCommands {
   /// List all available plugins on the plugin repository
   #[command()]
   All,
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct PluginRemoveOptions {
   /// Plugin name
   #[arg(value_name = "name")]
   pub name: String,
 }
 
-#[derive(Args)]
+#[derive(Args, Clone)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct PluginUpdateCommandOptions {
   #[command(subcommand)]
@@ -78,7 +78,7 @@ pub struct PluginUpdateCommandOptions {
   pub git_ref: Option<String>,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Clone)]
 pub enum PluginUpdateCommands {
   /// List all available plugins on the plugin repository
   #[command(name = "--all")]
