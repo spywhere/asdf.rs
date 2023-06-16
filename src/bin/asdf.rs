@@ -18,16 +18,13 @@ fn main() {
     _ => Err(Exit { exit_code: 1, message: Some("Command not available".to_string()) })
   };
 
-  match result {
-    Err(exit) => {
-      if let Some(message) = exit.message {
-        match exit.exit_code {
-          0 => stdout!("{}", message),
-          _ => stdout!("ERROR: {}", message)
-        }
+  if let Err(exit) = result {
+    if let Some(message) = exit.message {
+      match exit.exit_code {
+        0 => stdout!("{}", message),
+        _ => stdout!("ERROR: {}", message)
       }
-      std::process::exit(exit.exit_code)
-    },
-    _ => {},
+    }
+    std::process::exit(exit.exit_code)
   }
 }
