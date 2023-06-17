@@ -25,16 +25,18 @@ pub fn expand<P: AsRef<Path>>(path: P) -> PathBuf {
   home
 }
 
+#[derive(Clone)]
 pub enum CommonPath {
   Install { plugin: String, version: Option<String>, },
   Plugin(String),
+  PluginBinary { plugin: String, binary: String },
 }
 
-pub fn get(context: Context, path: CommonPath) -> Option<PathBuf> {
+pub fn get(context: &Context, path: CommonPath) -> Option<PathBuf> {
   let dir_path = Path::new(&context.data_dir);
   let dir_path = expand(dir_path);
 
-  let dir_path = match path {
+  let dir_path = match path.clone() {
     CommonPath::Install { plugin, version } => {
       let mut path = dir_path.join("installs").join(plugin);
       if let Some(version) = version {
@@ -44,10 +46,16 @@ pub fn get(context: Context, path: CommonPath) -> Option<PathBuf> {
     },
     CommonPath::Plugin(plugin) => {
       dir_path.join("plugins").join(plugin)
-    }
+    },
+    CommonPath::PluginBinary { plugin, binary } => {
+      dir_path.join("plugins").join(plugin).join("bin").join(binary)
+    },
   };
 
-  let is_dir = dir_path.is_dir();
+  let is_dir = match path {
+    CommonPath::PluginBinary { .. } => dir_path.is_file(),
+    _ => dir_path.is_dir(),
+  };
 
   if !matches!(dir_path.try_exists(), Ok(true)) || !is_dir {
     return None;

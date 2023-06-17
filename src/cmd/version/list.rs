@@ -30,7 +30,7 @@ fn list_plugin(
   version: Option<String>,
 ) -> Result<(), Exit> {
   let install_dir = util::path::get(
-    context,
+    &context,
     util::path::CommonPath::Install {
       plugin: plugin.clone(),
       version: version.clone(),
