@@ -1,5 +1,4 @@
 use std::fs;
-use std::path::Path;
 
 use crate::cli::stdout;
 use crate::cli::Exit;
@@ -15,30 +14,35 @@ pub struct ListOptions {
 
 pub fn list(context: Context, options: ListOptions) -> Result<(), Exit> {
   match options.plugin {
-    Some(plugin) => list_plugin(plugin, options.version, context.data_dir),
-    None => {
-      stdout!("list in {}", context.data_dir);
-      Ok(())
-    }
+    Some(plugin) => list_plugin(context, plugin, options.version),
+    None => list_all_plugin(context),
   }
 }
 
+fn list_all_plugin(context: Context) -> Result<(), Exit> {
+  stdout!("list in {}", context.data_dir);
+  Ok(())
+}
+
 fn list_plugin(
+  context: Context,
   plugin: String,
   version: Option<String>,
-  data_dir: String,
 ) -> Result<(), Exit> {
-  let install_dir = Path::new(&data_dir).join("installs").join(plugin.clone());
-  let install_dir = util::path::expand(install_dir);
+  let install_dir = util::path::get(
+    context,
+    util::path::CommonPath::Install {
+      plugin: plugin.clone(),
+      version: version.clone(),
+    },
+  );
 
-  let is_dir = install_dir.is_dir();
-
-  if !matches!(install_dir.try_exists(), Ok(true)) || !is_dir {
+  let Some(install_dir) = install_dir else {
     return Err(Exit {
       exit_code: 0,
       message: Some("No version installed".to_string()),
     });
-  }
+  };
 
   let Ok(entries) = fs::read_dir(install_dir) else {
     return Err(Exit {
