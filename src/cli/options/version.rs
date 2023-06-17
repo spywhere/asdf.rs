@@ -1,5 +1,5 @@
 use clap::{Args, Subcommand};
-use crate::cli::options::{PluginArgs, PackageArgs};
+use crate::cli::options::{OptionalPluginArgs, PluginArgs, PackageArgs};
 
 #[derive(Args, Clone)]
 pub struct CurrentOptions {
@@ -15,7 +15,7 @@ pub struct ListCommandOptions {
   pub command: Option<ListCommands>,
 
   #[command(flatten)]
-  pub list: Option<PluginArgs>,
+  pub list: OptionalPluginArgs,
 }
 
 #[derive(Subcommand, Clone)]
@@ -39,10 +39,10 @@ impl From<PluginArgs> for ListAllOptions {
   }
 }
 
-impl From<PluginArgs> for ListOptions {
-  fn from(args: PluginArgs) -> Self {
+impl From<OptionalPluginArgs> for ListOptions {
+  fn from(args: OptionalPluginArgs) -> Self {
     Self {
-      plugin: Some(args.name),
+      plugin: args.name,
       version: args.version,
     }
   }

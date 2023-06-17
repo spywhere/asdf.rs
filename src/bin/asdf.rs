@@ -10,10 +10,9 @@ fn main() {
   let context = cli.envs.into();
   let result = match &cli.command {
     Commands::Plugin(_) => Ok(()),
-    Commands::List(cmd) => match (cmd.command.clone(), cmd.list.clone()) {
-      (Some(options::ListCommands::All(args)), _) => cmd::list_all(context, args.into()),
-      (_, Some(list)) => cmd::list(context, list.into()),
-      _ => Err(Exit { exit_code: 1, message: Some("Command not available".to_string()) })
+    Commands::List(cmd) => match cmd.command.clone() {
+      Some(options::ListCommands::All(args)) => cmd::list_all(context, args.into()),
+      None => cmd::list(context, cmd.list.clone().into()),
     },
     _ => Err(Exit { exit_code: 1, message: Some("Command not available".to_string()) })
   };

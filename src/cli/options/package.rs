@@ -1,6 +1,6 @@
 use clap::{Args, Subcommand};
 
-use crate::cli::options::{PluginArgs, PackageArgs};
+use crate::cli::options::{OptionalPluginArgs, PluginArgs, PackageArgs};
 
 pub type LatestOptions = PluginArgs;
 
@@ -21,15 +21,6 @@ pub enum LatestCommands {
   All,
 }
 
-#[derive(Args, Clone)]
-pub struct InstallOptions {
-  /// Plugin name
-  #[arg(value_name = "name")]
-  pub name: Option<String>,
-
-  /// Package version
-  #[arg(value_name = "version")]
-  pub version: Option<String>,
-}
+pub type InstallOptions = OptionalPluginArgs;
 
 pub type UninstallOptions = PackageArgs;
