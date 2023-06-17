@@ -13,3 +13,4 @@ name = "asdf"
 clap = { version = "4.3.3", features = ["cargo", "derive", "env"] }
 dirs = "5.0.1"
 git2 = "0.17.2"
+wait-timeout = "0.2.0"
