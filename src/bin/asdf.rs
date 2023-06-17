@@ -11,7 +11,9 @@ fn main() {
   let result = match &cli.command {
     Commands::Plugin(_) => Ok(()),
     Commands::List(cmd) => match cmd.command.clone() {
-      Some(options::ListCommands::All(args)) => cmd::list_all(context, args.into()),
+      Some(options::ListCommands::All(args)) => {
+        cmd::list_all(context, args.into())
+      }
       None => cmd::list(context, cmd.list.clone().into()),
     },
     _ => Err(Exit {

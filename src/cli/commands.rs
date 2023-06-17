@@ -22,7 +22,10 @@ pub enum Commands {
   #[command()]
   Current(CurrentOptions),
   /// Display installed versions of a package
-  #[command(subcommand_negates_reqs = true, subcommand_precedence_over_arg = true)]
+  #[command(
+    subcommand_negates_reqs = true,
+    subcommand_precedence_over_arg = true
+  )]
   List(ListCommandOptions),
   /// Set the package global version
   #[command()]

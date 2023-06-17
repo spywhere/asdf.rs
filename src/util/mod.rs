@@ -7,7 +7,8 @@ pub fn expand_path<P: AsRef<Path>>(path: P) -> PathBuf {
     return path.to_path_buf();
   }
 
-  let mut home = dirs::home_dir().unwrap_or_else(|| Path::new("~").to_path_buf());
+  let mut home =
+    dirs::home_dir().unwrap_or_else(|| Path::new("~").to_path_buf());
   if path == Path::new("~") {
     return home;
   }

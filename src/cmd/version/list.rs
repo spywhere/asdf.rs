@@ -23,7 +23,11 @@ pub fn list(context: Context, options: ListOptions) -> Result<(), Exit> {
   }
 }
 
-fn list_plugin(plugin: String, version: Option<String>, data_dir: String) -> Result<(), Exit> {
+fn list_plugin(
+  plugin: String,
+  version: Option<String>,
+  data_dir: String,
+) -> Result<(), Exit> {
   let install_dir = Path::new(&data_dir).join("installs").join(plugin.clone());
   let install_dir = util::expand_path(install_dir);
 
