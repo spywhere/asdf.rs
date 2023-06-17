@@ -4,13 +4,9 @@ use crate::cli::options::*;
 
 #[derive(Subcommand, Clone)]
 pub enum Commands {
-  // Plugin Management //
-
   /// Plugin management
   #[command()]
   Plugin(PluginOptions),
-
-  // Package Management //
 
   /// Show latest stable version
   #[command()]
@@ -21,8 +17,6 @@ pub enum Commands {
   /// Remove a specific version of a package
   #[command()]
   Uninstall(UninstallOptions),
-
-  // Version Management //
 
   /// Display current version set or being used for all packages
   #[command()]
@@ -39,8 +33,6 @@ pub enum Commands {
   /// Set the package version in the current shell session
   #[command()]
   Shell(ShellOptions),
-
-  // Installation Management //
 
   /// Display install path for a package
   #[command()]

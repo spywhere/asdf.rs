@@ -1,6 +1,6 @@
 use clap::{Args, Subcommand};
 
-use crate::cli::options::{OptionalPluginArgs, PluginArgs, PackageArgs};
+use crate::cli::options::{OptionalPluginArgs, PackageArgs, PluginArgs};
 
 pub type LatestOptions = PluginArgs;
 

@@ -1,6 +1,6 @@
-use asdf::cli::stdout;
-use asdf::cli::{Parser, Cli, Commands, Exit};
 use asdf::cli::options;
+use asdf::cli::stdout;
+use asdf::cli::{Cli, Commands, Exit, Parser};
 
 use asdf::cmd;
 
@@ -14,14 +14,17 @@ fn main() {
       Some(options::ListCommands::All(args)) => cmd::list_all(context, args.into()),
       None => cmd::list(context, cmd.list.clone().into()),
     },
-    _ => Err(Exit { exit_code: 1, message: Some("Command not available".to_string()) })
+    _ => Err(Exit {
+      exit_code: 1,
+      message: Some("Command not available".to_string()),
+    }),
   };
 
   if let Err(exit) = result {
     if let Some(message) = exit.message {
       match exit.exit_code {
         0 => stdout!("{}", message),
-        _ => stdout!("ERROR: {}", message)
+        _ => stdout!("ERROR: {}", message),
       }
     }
     std::process::exit(exit.exit_code)

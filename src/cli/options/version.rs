@@ -1,5 +1,5 @@
+use crate::cli::options::{OptionalPluginArgs, PackageArgs, PluginArgs};
 use clap::{Args, Subcommand};
-use crate::cli::options::{OptionalPluginArgs, PluginArgs, PackageArgs};
 
 #[derive(Args, Clone)]
 pub struct CurrentOptions {
@@ -25,10 +25,7 @@ pub enum ListCommands {
   All(PluginArgs),
 }
 
-use crate::cmd::{
-  ListOptions,
-  ListAllOptions
-};
+use crate::cmd::{ListAllOptions, ListOptions};
 
 impl From<PluginArgs> for ListAllOptions {
   fn from(args: PluginArgs) -> Self {

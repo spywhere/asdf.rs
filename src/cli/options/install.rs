@@ -1,6 +1,6 @@
 use clap::Args;
 
-use crate::cli::options::{PluginArgs, PackageArgs};
+use crate::cli::options::{PackageArgs, PluginArgs};
 
 pub type WhereOptions = PluginArgs;
 

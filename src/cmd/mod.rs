@@ -1,5 +1,5 @@
 pub struct Context {
-    pub data_dir: String,
+  pub data_dir: String,
 }
 
 mod version;
