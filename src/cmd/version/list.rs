@@ -29,7 +29,7 @@ fn list_plugin(
   data_dir: String,
 ) -> Result<(), Exit> {
   let install_dir = Path::new(&data_dir).join("installs").join(plugin.clone());
-  let install_dir = util::expand_path(install_dir);
+  let install_dir = util::path::expand(install_dir);
 
   let is_dir = install_dir.is_dir();
 
