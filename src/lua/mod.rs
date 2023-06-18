@@ -95,15 +95,15 @@ impl From<mlua::Error> for ExecutionError {
   }
 }
 
-use crate::plugin::Plugin;
+use crate::plugin::{self, Plugin};
 impl PluginExecutable for Plugin {
   fn execute(&self, entrypoint: EntryPoint) -> Result<(), ExecutionError> {
     let entry =
-      util::path::check_exists(self.plugin_dir.join("asdf.lua"), false);
+      util::path::check_exists(self.plugin_dir.join(plugin::ENTRY_POINT), false);
 
     let lua = Lua::new();
 
-    api::load(&lua)?;
+    api::load(self, &lua)?;
 
     let function = match entry {
       Some(path) => lua.load(path.as_path()).into_function(),

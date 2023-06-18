@@ -7,6 +7,8 @@ use crate::util;
 
 use crate::cmd::Context;
 
+pub static ENTRY_POINT: &str = "asdf.lua";
+
 pub enum PluginError {
   NotFound(String),
   Corrupted { name: String, binary: String },
