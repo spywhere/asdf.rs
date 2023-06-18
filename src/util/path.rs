@@ -30,14 +30,26 @@ pub enum CommonPath {
     version: Option<String>,
   },
   Plugin(String),
-  PluginEntry(String),
+}
+
+pub fn check_exists(path: PathBuf, expect_dir: bool) -> Option<PathBuf> {
+  let is_dir = match expect_dir {
+    true => path.is_dir(),
+    false => path.is_file(),
+  };
+
+  if !matches!(path.try_exists(), Ok(true)) || !is_dir {
+    return None;
+  }
+
+  Some(path)
 }
 
 pub fn get(data_dir: &String, path: CommonPath) -> Option<PathBuf> {
   let dir_path = Path::new(&data_dir);
   let dir_path = expand(dir_path);
 
-  let dir_path = match path.clone() {
+  let dir_path = match path {
     CommonPath::Install { plugin, version } => {
       let mut path = dir_path.join("installs").join(plugin);
       if let Some(version) = version {
@@ -46,19 +58,7 @@ pub fn get(data_dir: &String, path: CommonPath) -> Option<PathBuf> {
       path
     }
     CommonPath::Plugin(plugin) => dir_path.join("plugins").join(plugin),
-    CommonPath::PluginEntry(plugin) => {
-      dir_path.join("plugins").join(plugin).join("asdf.lua")
-    }
   };
 
-  let is_dir = match path {
-    CommonPath::PluginEntry(_) => dir_path.is_file(),
-    _ => dir_path.is_dir(),
-  };
-
-  if !matches!(dir_path.try_exists(), Ok(true)) || !is_dir {
-    return None;
-  }
-
-  Some(dir_path)
+  check_exists(dir_path, true)
 }

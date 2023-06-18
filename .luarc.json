@@ -1,0 +1,9 @@
+{
+  "runtime": {
+    "version": "LuaJIT"
+  },
+  "diagnostics": {
+    "globals": ["api"]
+  },
+  "workspace.checkThirdParty": false
+}
