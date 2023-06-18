@@ -1,8 +1,13 @@
 use mlua::Lua;
+use std::error::Error;
+use std::fmt;
 
 mod api;
 
 use crate::util;
+
+mod validate;
+pub use validate::*;
 
 pub static INFERRED_ENTRY_CODE: &str = include_str!("../../runtime/asdf.lua");
 
@@ -10,10 +15,69 @@ pub enum EntryPoint {
   Main,
 }
 
+#[derive(Debug)]
 pub enum ExecutionError {
   LoadingError,
   InvalidSyntax(String),
   RuntimeError(String),
+}
+
+#[derive(Debug)]
+pub enum LengthRequirement {
+  Exact(u8),
+  Minimum(u8),
+  Between(u8, u8),
+  Maximum(u8),
+}
+
+#[derive(Debug)]
+pub enum RuntimeError {
+  ExpectError { expect: String, actual: String },
+  ArgumentRequired(String),
+  LengthRequired(String, LengthRequirement),
+}
+
+impl Error for ExecutionError {}
+impl Error for RuntimeError {}
+
+impl fmt::Display for ExecutionError {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      ExecutionError::LoadingError => write!(f, "loading error"),
+      ExecutionError::InvalidSyntax(message) => write!(f, "{message}"),
+      ExecutionError::RuntimeError(message) => write!(f, "{message}"),
+    }
+  }
+}
+
+impl fmt::Display for RuntimeError {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      RuntimeError::ExpectError { expect, actual } => {
+        write!(f, "expected {expect}, got {actual} instead")
+      }
+      RuntimeError::ArgumentRequired(name) => {
+        write!(f, "argument '{name}' is required")
+      }
+      RuntimeError::LengthRequired(name, requirement) => match requirement {
+        LengthRequirement::Exact(size) => {
+          write!(f, "expected '{name}' to have a length of {size}")
+        }
+        LengthRequirement::Minimum(size) => {
+          write!(f, "expected '{name}' to have a at least a length of {size}")
+        }
+        LengthRequirement::Between(min, max) => {
+          write!(
+            f,
+            "expected '{name}' to have a length between {min} and {max}"
+          )
+        }
+        LengthRequirement::Maximum(size) => {
+          write!(f, "expected '{name}' to have a at most a length of {size}")
+        }
+      },
+    }
+  }
 }
 
 pub trait PluginExecutable {

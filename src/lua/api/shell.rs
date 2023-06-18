@@ -1,12 +1,10 @@
-use super::ExecutionError;
-use crate::cli::stdout;
+use crate::lua::{
+  try_expect, LengthRequirement, RuntimeError, TableExpectation,
+};
 
 use crate::api::shell;
 
-pub fn load(
-  lua: &mlua::Lua,
-  table: &mlua::Table,
-) -> Result<(), ExecutionError> {
+pub fn load(lua: &mlua::Lua, table: &mlua::Table) -> Result<(), mlua::Error> {
   table.set("spawn", lua.create_function(spawn)?)?;
 
   Ok(())
@@ -14,32 +12,37 @@ pub fn load(
 
 fn spawn<'a>(
   lua: &'a mlua::Lua,
-  options: mlua::Table,
-) -> Result<(mlua::Table<'a>, u8), mlua::Error> {
+  options: mlua::Value,
+) -> Result<(i8, Option<mlua::Table<'a>>), mlua::Error> {
+  let options = try_expect!(options, mlua::Value::Table)?;
 
-  let args: mlua::Table = options.get("args")?;
+  let args = options.try_get("args".to_string())?;
+  let args = try_expect!(args, mlua::Value::Table)?;
+
   let mut args = args.sequence_values::<String>();
 
   let Some(command) = args.next() else {
-    return Err(mlua::Error::RuntimeError("Command is expected".to_string()));
+    return Err(mlua::Error::external(RuntimeError::LengthRequired(
+      "args".to_string(),
+      LengthRequirement::Minimum(1)
+    )))
   };
+
   let command = command?;
   let args = args.filter_map(|v| v.ok());
   let args = args.collect::<Vec<String>>();
 
-  let output = lua.create_table()?;
+  let mut output = None;
   let mut code = 0;
-  stdout!("{} {:?}", command, args);
   match shell::spawn(&command, args, None) {
     Ok(result) => {
-      stdout!("building output");
-      output.set("exit_code", result.exit_code)?;
-      output.set("stdout", result.stdout)?;
-      output.set("stderr", result.stderr)?;
-      stdout!("finish output");
+      let out = lua.create_table()?;
+      out.set("exit_code", result.exit_code)?;
+      out.set("stdout", result.stdout)?;
+      out.set("stderr", result.stderr)?;
+      output = Some(out)
     }
     Err(error) => {
-      stdout!("building error");
       code = match error {
         shell::ShellError::Timedout => 1,
         shell::ShellError::ProcessError => 2,
@@ -48,5 +51,5 @@ fn spawn<'a>(
     }
   };
 
-  Ok((output, code))
+  Ok((code, output))
 }
