@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use crate::cmd::Context;
-
 pub fn expand<P: AsRef<Path>>(path: P) -> PathBuf {
   let path = path.as_ref();
 
@@ -27,13 +25,16 @@ pub fn expand<P: AsRef<Path>>(path: P) -> PathBuf {
 
 #[derive(Clone)]
 pub enum CommonPath {
-  Install { plugin: String, version: Option<String>, },
+  Install {
+    plugin: String,
+    version: Option<String>,
+  },
   Plugin(String),
-  PluginBinary { plugin: String, binary: String },
+  PluginEntry(String),
 }
 
-pub fn get(context: &Context, path: CommonPath) -> Option<PathBuf> {
-  let dir_path = Path::new(&context.data_dir);
+pub fn get(data_dir: &String, path: CommonPath) -> Option<PathBuf> {
+  let dir_path = Path::new(&data_dir);
   let dir_path = expand(dir_path);
 
   let dir_path = match path.clone() {
@@ -43,17 +44,15 @@ pub fn get(context: &Context, path: CommonPath) -> Option<PathBuf> {
         path = path.join(version);
       }
       path
-    },
-    CommonPath::Plugin(plugin) => {
-      dir_path.join("plugins").join(plugin)
-    },
-    CommonPath::PluginBinary { plugin, binary } => {
-      dir_path.join("plugins").join(plugin).join("bin").join(binary)
-    },
+    }
+    CommonPath::Plugin(plugin) => dir_path.join("plugins").join(plugin),
+    CommonPath::PluginEntry(plugin) => {
+      dir_path.join("plugins").join(plugin).join("asdf.lua")
+    }
   };
 
   let is_dir = match path {
-    CommonPath::PluginBinary { .. } => dir_path.is_file(),
+    CommonPath::PluginEntry(_) => dir_path.is_file(),
     _ => dir_path.is_dir(),
   };
 

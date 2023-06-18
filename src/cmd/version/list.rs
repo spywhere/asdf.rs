@@ -1,11 +1,9 @@
-use std::fs;
-
 use crate::cli::stdout;
 use crate::cli::Exit;
 
 use crate::cmd::Context;
 
-use crate::util;
+use crate::plugin::{self as plugin, PackageError, PackageVersion};
 
 pub struct ListOptions {
   pub plugin: Option<String>,
@@ -29,50 +27,22 @@ fn list_plugin(
   plugin: String,
   version: Option<String>,
 ) -> Result<(), Exit> {
-  let install_dir = util::path::get(
-    &context,
-    util::path::CommonPath::Install {
-      plugin: plugin.clone(),
-      version: version.clone(),
-    },
-  );
+  let name = plugin.clone();
+  let plugin = plugin::get(&context, plugin)?;
+  let versions = plugin.versions(&version)?;
 
-  let Some(install_dir) = install_dir else {
-    return Err(Exit {
-      exit_code: 0,
-      message: Some("No version installed".to_string()),
-    });
-  };
-
-  let Ok(entries) = fs::read_dir(install_dir) else {
-    return Err(Exit {
-      exit_code: 1,
-      message: Some(format!("Cannot fetch installed version for {}", plugin))
-    })
-  };
-
-  let mut versions: Vec<String> = entries
-    .filter_map(|e| e.ok())
-    .filter(|e| e.path().is_dir())
-    .map(|e| e.file_name().into_string().unwrap_or_default())
-    .filter(|v| {
-      version
-        .as_ref()
-        .map_or(true, |ver| v.starts_with(ver.as_str()))
-    })
-    .collect();
-
-  if let (Some(version), true) = (version, versions.is_empty()) {
-    return Err(Exit {
-      exit_code: 1,
-      message: Some(format!(
-        "No compatible version installed ({} {})",
-        plugin, version
-      )),
-    });
+  if versions.is_empty() {
+    return match version {
+      Some(version) => Err(Exit {
+        exit_code: 1,
+        message: Some(format!(
+          "No compatible version installed ({} {})",
+          name, version
+        )),
+      }),
+      None => Err(PackageError::NoInstallation.into()),
+    }
   }
-
-  versions.sort();
 
   for version in versions {
     stdout!("  {}", version);

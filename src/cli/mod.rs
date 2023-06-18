@@ -21,6 +21,38 @@ pub struct Exit {
   pub message: Option<String>,
 }
 
+use crate::plugin::PluginError;
+impl From<PluginError> for Exit {
+  fn from(value: PluginError) -> Self {
+    match value {
+      PluginError::NotFound(name) => Exit {
+        exit_code: 1,
+        message: Some(format!("No such plugin: {}", name)),
+      },
+      PluginError::Corrupted { name, binary } => Exit {
+        exit_code: 1,
+        message: Some(format!("Plugin {} is corrupted ({} expected)", name, binary)),
+      }
+    }
+  }
+}
+
+use crate::plugin::PackageError;
+impl From<PackageError> for Exit {
+  fn from(value: PackageError) -> Self {
+    match value {
+      PackageError::NoInstallation => Exit {
+        exit_code: 0,
+        message: Some("No version installed".to_string()),
+      },
+      PackageError::FetchError(name) => Exit {
+        exit_code: 1,
+        message: Some(format!("Cannot fetch installed version for {}", name))
+      }
+    }
+  }
+}
+
 #[macro_export]
 macro_rules! stdout {
   ($($arg:tt)*) => {{
