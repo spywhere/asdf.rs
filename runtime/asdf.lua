@@ -5,7 +5,7 @@ if not bin then
   return
 end
 
-local code, output = api.spawn {
+local code, output = api.process.spawn {
   command = bin
 }
 
