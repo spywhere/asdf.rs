@@ -11,8 +11,17 @@ pub use validate::*;
 
 pub static INFERRED_ENTRY_CODE: &str = include_str!("../../runtime/asdf.lua");
 
+#[derive(Clone)]
 pub enum EntryPoint {
   Main,
+}
+
+impl From<EntryPoint> for String {
+  fn from(value: EntryPoint) -> Self {
+    match value {
+      EntryPoint::Main => "main".to_string()
+    }
+  }
 }
 
 #[derive(Debug)]
@@ -20,6 +29,7 @@ pub enum ExecutionError {
   LoadingError,
   InvalidSyntax(String),
   RuntimeError(String),
+  EntryPointError(String),
 }
 
 #[derive(Debug)]
@@ -43,9 +53,10 @@ impl Error for RuntimeError {}
 impl fmt::Display for ExecutionError {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
-      ExecutionError::LoadingError => write!(f, "loading error"),
+      ExecutionError::LoadingError => write!(f, "error while loading default plugin"),
       ExecutionError::InvalidSyntax(message) => write!(f, "{message}"),
       ExecutionError::RuntimeError(message) => write!(f, "{message}"),
+      ExecutionError::EntryPointError(entry) => write!(f, "entry point '{entry}' is missing"),
     }
   }
 }

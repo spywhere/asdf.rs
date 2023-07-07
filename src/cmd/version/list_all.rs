@@ -21,11 +21,7 @@ pub fn list_all(
   if let Err(err) = plugin.execute(lua::EntryPoint::Main) {
     return Err(Exit {
       exit_code: 1,
-      message: Some(match err {
-        lua::ExecutionError::LoadingError => "Loading error".to_string(),
-        lua::ExecutionError::InvalidSyntax(str) => str,
-        lua::ExecutionError::RuntimeError(str) => str,
-      }),
+      message: Some(err.to_string()),
     });
   }
 
