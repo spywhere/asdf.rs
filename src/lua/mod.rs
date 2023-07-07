@@ -114,8 +114,6 @@ impl PluginExecutable for Plugin {
 
     let lua = Lua::new();
 
-    api::load(self, &lua)?;
-
     let function = match entry {
       Some(path) => lua.load(path.as_path()).into_function(),
       None => lua
@@ -125,7 +123,17 @@ impl PluginExecutable for Plugin {
         .into_function(),
     }?;
 
-    function.call(())?;
+    let module: mlua::Value = function.call(())?;
+    let module: mlua::Table = unwrap_expect(module, &lua)?;
+
+    api::load(self, &lua)?;
+
+    let Some(entry) = module.try_get(entrypoint.clone().into())? else {
+      return Err(ExecutionError::EntryPointError(entrypoint.into()));
+    };
+
+    let entry: mlua::Function = unwrap_expect(entry, &lua)?;
+    entry.call(())?;
 
     Ok(())
   }

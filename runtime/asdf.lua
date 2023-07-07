@@ -1,15 +1,19 @@
-local bin = plugin.file('bin/list-all')
+return {
+  main = function ()
+    local bin = plugin.file('bin/list-all')
 
-if not bin then
-  print('plugin corrupted')
-  return
-end
+    if not bin then
+      print('plugin corrupted')
+      return
+    end
 
-local code, output = api.process.spawn {
-  command = bin
+    local code, output = api.process.spawn {
+      command = bin
+    }
+
+    print(code)
+    if code == 0 then
+      print(output.stdout)
+    end
+  end
 }
-
-print(code)
-if code == 0 then
-  print(output.stdout)
-end
