@@ -14,12 +14,14 @@ pub static INFERRED_ENTRY_CODE: &str = include_str!("../../runtime/asdf.lua");
 #[derive(Clone)]
 pub enum EntryPoint {
   Main,
+  Agnosticism,
 }
 
 impl From<EntryPoint> for String {
   fn from(value: EntryPoint) -> Self {
     match value {
       EntryPoint::Main => "main".to_string(),
+      EntryPoint::Agnosticism => "agnosticism".to_string(),
     }
   }
 }
@@ -96,7 +98,7 @@ impl fmt::Display for RuntimeError {
 }
 
 pub trait PluginExecutable {
-  fn execute(&self, entrypoint: EntryPoint) -> Result<(), ExecutionError>;
+  fn execute(&self, entrypoint: EntryPoint) -> Result<mlua::Value, ExecutionError>;
 }
 
 impl From<mlua::Error> for ExecutionError {
@@ -112,7 +114,7 @@ impl From<mlua::Error> for ExecutionError {
 
 use crate::plugin::{self, Plugin};
 impl PluginExecutable for Plugin {
-  fn execute(&self, entrypoint: EntryPoint) -> Result<(), ExecutionError> {
+  fn execute(&self, entrypoint: EntryPoint) -> Result<mlua::Value, ExecutionError> {
     let entry = util::path::check_exists(
       self.plugin_dir.join(plugin::ENTRY_POINT),
       false,
@@ -139,8 +141,6 @@ impl PluginExecutable for Plugin {
     };
 
     let entry: mlua::Function = unwrap_expect(&lua, entry)?;
-    entry.call(())?;
-
-    Ok(())
+    Ok(entry.call(())?)
   }
 }

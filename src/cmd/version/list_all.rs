@@ -18,12 +18,8 @@ pub fn list_all(
   let name = options.plugin;
   let plugin = plugin::get(&context, name)?;
 
-  if let Err(err) = plugin.execute(lua::EntryPoint::Main) {
-    return Err(Exit {
-      exit_code: 1,
-      message: Some(err.to_string()),
-    });
-  }
-
-  Ok(())
+  plugin.execute(lua::EntryPoint::Main).map_err(|e| Exit {
+    exit_code: 1,
+    message: Some(e.to_string())
+  })
 }
