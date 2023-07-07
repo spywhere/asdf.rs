@@ -124,7 +124,7 @@ impl PluginExecutable for Plugin {
     }?;
 
     let module: mlua::Value = function.call(())?;
-    let module: mlua::Table = unwrap_expect(module, &lua)?;
+    let module: mlua::Table = unwrap_expect(&lua, module)?;
 
     api::load(self, &lua)?;
 
@@ -132,7 +132,7 @@ impl PluginExecutable for Plugin {
       return Err(ExecutionError::EntryPointError(entrypoint.into()));
     };
 
-    let entry: mlua::Function = unwrap_expect(entry, &lua)?;
+    let entry: mlua::Function = unwrap_expect(&lua, entry)?;
     entry.call(())?;
 
     Ok(())

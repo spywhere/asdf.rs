@@ -23,7 +23,7 @@ impl TableExpectation for mlua::Table<'_> {
   }
 }
 
-pub fn unwrap_expect<'a, V>(value: mlua::Value<'a>, lua: &'a mlua::Lua) -> Result<V, mlua::Error> where V: mlua::FromLua<'a> {
+pub fn unwrap_expect<'a, V>(lua: &'a mlua::Lua, value: mlua::Value<'a>) -> Result<V, mlua::Error> where V: mlua::FromLua<'a> {
   V::from_lua(value, lua).map_err(|e| match e {
     mlua::Error::FromLuaConversionError { from, to, .. } => mlua::Error::external(crate::lua::RuntimeError::ExpectError {
       expect: to.to_string(),
