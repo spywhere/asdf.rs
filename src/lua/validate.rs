@@ -23,34 +23,12 @@ impl TableExpectation for mlua::Table<'_> {
   }
 }
 
-#[macro_export]
-macro_rules! unwrap_expect {
-  ($var:expr, $kind:path) => {{
-    let value = $var;
-    let $kind(value) = value else {
-      return Err(mlua::Error::external($crate::lua::RuntimeError::ExpectError {
-        /// TODO: fix incorrect type detection
-        expect: mlua::Value::type_name(&value).to_string(),
-        actual: value.type_name().to_string(),
-      }))
-    };
-    Ok::<_, mlua::Error>(value)
-  }};
+pub fn unwrap_expect<'a, V>(value: mlua::Value<'a>, lua: &'a mlua::Lua) -> Result<V, mlua::Error> where V: mlua::FromLua<'a> {
+  V::from_lua(value, lua).map_err(|e| match e {
+    mlua::Error::FromLuaConversionError { from, to, .. } => mlua::Error::external(crate::lua::RuntimeError::ExpectError {
+      expect: to.to_string(),
+      actual: from.to_string()
+    }),
+    _ => e
+  })
 }
-pub use unwrap_expect;
-
-#[macro_export]
-macro_rules! try_expect {
-  ($var:expr, $kind:path) => {{
-    let value = $var;
-    match value {
-      $kind(value) => Ok::<_, mlua::Error>(Some(value)),
-      mlua::Value::Nil => Ok::<_, mlua::Error>(None),
-      _ => Err(mlua::Error::external($crate::lua::RuntimeError::ExpectError {
-        expect: mlua::Value::type_name(&value).to_string(),
-        actual: value.type_name().to_string(),
-      }))
-    }
-  }};
-}
-pub use try_expect;

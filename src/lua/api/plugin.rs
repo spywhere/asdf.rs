@@ -19,8 +19,8 @@ fn file<'a>(
 ) -> Result<mlua::Function<'a>, mlua::Error> {
   let plugin_dir = plugin.plugin_dir.clone();
 
-  let func = move |_, options: mlua::Value| {
-    let path = unwrap_expect!(options, mlua::Value::String)?;
+  let func = move |l: &mlua::Lua, options: mlua::Value| {
+    let path: mlua::String = unwrap_expect(options, l)?;
 
     let entry = util::path::check_exists(
       plugin_dir.join(path.to_str().unwrap_or("")),

@@ -12,17 +12,17 @@ fn spawn<'a>(lua: &'a mlua::Lua) -> Result<mlua::Function<'a>, mlua::Error> {
   let func = move |l: &'a mlua::Lua,
                    options: mlua::Value|
         -> Result<(i8, Option<mlua::Table<'a>>), mlua::Error> {
-    let options = unwrap_expect!(options, mlua::Value::Table)?;
+    let options: mlua::Table = unwrap_expect(options, l)?;
 
     let command = options.expect_get("command".to_string())?;
-    let command = unwrap_expect!(command, mlua::Value::String)?;
+    let command: mlua::String = unwrap_expect(command, l)?;
     let command = command.to_str()?.to_string();
 
     let opt_args = options.try_get("args".to_string())?;
     let mut args: Vec<String> = Vec::new();
 
     if let Some(opt_args) = opt_args {
-      let opt_args = unwrap_expect!(opt_args, mlua::Value::Table)?;
+      let opt_args: mlua::Table = unwrap_expect(opt_args, l)?;
       let opt_args = opt_args.sequence_values::<String>();
       let opt_args = opt_args.filter_map(|v| v.ok());
       args = opt_args.collect::<Vec<String>>();
