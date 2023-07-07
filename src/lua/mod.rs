@@ -19,7 +19,7 @@ pub enum EntryPoint {
 impl From<EntryPoint> for String {
   fn from(value: EntryPoint) -> Self {
     match value {
-      EntryPoint::Main => "main".to_string()
+      EntryPoint::Main => "main".to_string(),
     }
   }
 }
@@ -53,10 +53,14 @@ impl Error for RuntimeError {}
 impl fmt::Display for ExecutionError {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
-      ExecutionError::LoadingError => write!(f, "error while loading default plugin"),
+      ExecutionError::LoadingError => {
+        write!(f, "error while loading default plugin")
+      }
       ExecutionError::InvalidSyntax(message) => write!(f, "{message}"),
       ExecutionError::RuntimeError(message) => write!(f, "{message}"),
-      ExecutionError::EntryPointError(entry) => write!(f, "entry point '{entry}' is missing"),
+      ExecutionError::EntryPointError(entry) => {
+        write!(f, "entry point '{entry}' is missing")
+      }
     }
   }
 }
@@ -109,8 +113,10 @@ impl From<mlua::Error> for ExecutionError {
 use crate::plugin::{self, Plugin};
 impl PluginExecutable for Plugin {
   fn execute(&self, entrypoint: EntryPoint) -> Result<(), ExecutionError> {
-    let entry =
-      util::path::check_exists(self.plugin_dir.join(plugin::ENTRY_POINT), false);
+    let entry = util::path::check_exists(
+      self.plugin_dir.join(plugin::ENTRY_POINT),
+      false,
+    );
 
     let lua = Lua::new();
 
