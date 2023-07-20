@@ -3,7 +3,7 @@
     "version": "LuaJIT"
   },
   "diagnostics": {
-    "globals": ["api", "plugin"]
+    "globals": ["asdf", "api", "plugin"]
   },
   "workspace.checkThirdParty": false
 }

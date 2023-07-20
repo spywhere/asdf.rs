@@ -11,9 +11,11 @@ return {
       command = bin
     }
 
-    print(code)
     if code == 0 then
-      print(output.stdout)
+      local versions = asdf.split_whitespace(output.stdout)
+      print(table.concat(versions, '\n'))
+    else
+      print('Error while fetching available versions')
     end
   end
 }
