@@ -98,7 +98,7 @@ impl fmt::Display for RuntimeError {
 }
 
 pub trait PluginExecutable {
-  fn execute(&self, entrypoint: EntryPoint) -> Result<mlua::Value, ExecutionError>;
+  fn execute(&self, entrypoint: EntryPoint) -> Result<(), ExecutionError>;
 }
 
 impl From<mlua::Error> for ExecutionError {
@@ -114,13 +114,28 @@ impl From<mlua::Error> for ExecutionError {
 
 use crate::plugin::{self, Plugin};
 impl PluginExecutable for Plugin {
-  fn execute(&self, entrypoint: EntryPoint) -> Result<mlua::Value, ExecutionError> {
+  fn execute(&self, entrypoint: EntryPoint) -> Result<(), ExecutionError> {
     let entry = util::path::check_exists(
       self.plugin_dir.join(plugin::ENTRY_POINT),
       false,
     );
 
     let lua = Lua::new();
+
+    let globals = lua.globals();
+    let package: mlua::Value = globals.get("package")?;
+    let package: mlua::Table = unwrap_expect(&lua, package)?;
+    let path: mlua::Value = package.get("path")?;
+    let path: mlua::String = unwrap_expect(&lua, path)?;
+    let path = format!(
+      "{}{};{}{};{}",
+      self.plugin_dir.to_str().unwrap_or(""),
+      "/?.lua",
+      self.plugin_dir.to_str().unwrap_or(""),
+      "/?/init.lua",
+      path.to_str()?
+    );
+    package.set("path", path)?;
 
     let function = match entry {
       Some(path) => lua.load(path.as_path()).into_function(),
@@ -141,6 +156,8 @@ impl PluginExecutable for Plugin {
     };
 
     let entry: mlua::Function = unwrap_expect(&lua, entry)?;
-    Ok(entry.call(())?)
+    entry.call(())?;
+
+    Ok(())
   }
 }
