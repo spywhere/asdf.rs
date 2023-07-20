@@ -39,13 +39,10 @@ impl PackageVersion for super::Plugin {
       },
     );
 
-    let Some(install_dir) = install_dir else {
-      return Err(PackageError::NoInstallation);
-    };
+    let install_dir = install_dir.ok_or(PackageError::NoInstallation)?;
 
-    let Ok(entries) = fs::read_dir(install_dir) else {
-      return Err(PackageError::FetchError(name.to_string()));
-    };
+    let entries = fs::read_dir(install_dir)
+      .map_err(|_| PackageError::FetchError(name.to_string()))?;
 
     let mut versions: Vec<String> = entries
       .filter_map(|e| e.ok())

@@ -29,7 +29,7 @@ pub enum CommonPath {
     plugin: String,
     version: Option<String>,
   },
-  Plugin(String),
+  Plugin(Option<String>),
 }
 
 pub fn check_exists(path: PathBuf, expect_dir: bool) -> Option<PathBuf> {
@@ -57,7 +57,13 @@ pub fn get(data_dir: &String, path: CommonPath) -> Option<PathBuf> {
       }
       path
     }
-    CommonPath::Plugin(plugin) => dir_path.join("plugins").join(plugin),
+    CommonPath::Plugin(plugin) => {
+      let mut path = dir_path.join("plugins");
+      if let Some(plugin) = plugin {
+        path = path.join(plugin)
+      }
+      path
+    },
   };
 
   check_exists(dir_path, true)

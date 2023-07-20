@@ -25,6 +25,14 @@ use crate::plugin::PluginError;
 impl From<PluginError> for Exit {
   fn from(value: PluginError) -> Self {
     match value {
+      PluginError::NoPlugin => Exit {
+        exit_code: 1,
+        message: Some("No plugin installed".to_string()),
+      },
+      PluginError::FetchError => Exit {
+        exit_code: 1,
+        message: Some("Cannot fetch plugins".to_string())
+      },
       PluginError::NotFound(name) => Exit {
         exit_code: 1,
         message: Some(format!("No such plugin: {}", name)),

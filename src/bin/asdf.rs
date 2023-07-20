@@ -9,12 +9,18 @@ fn main() {
 
   let context = cli.envs.into();
   let result = match &cli.command {
-    Commands::Plugin(_) => Ok(()),
+    Commands::Plugin(cmd) => match cmd.command.clone() {
+      options::PluginCommands::List(args) => match args.command {
+        Some(_) => cmd::plugin::list_all(context),
+        None => cmd::plugin::list(context, args.into())
+      },
+      _ => Ok(())
+    },
     Commands::List(cmd) => match cmd.command.clone() {
       Some(options::ListCommands::All(args)) => {
-        cmd::list_all(context, args.into())
+        cmd::version::list_all(context, args.into())
       }
-      None => cmd::list(context, cmd.list.clone().into()),
+      None => cmd::version::list(context, cmd.list.clone().into()),
     },
     _ => Err(Exit {
       exit_code: 1,

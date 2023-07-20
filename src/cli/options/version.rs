@@ -25,7 +25,7 @@ pub enum ListCommands {
   All(PluginArgs),
 }
 
-use crate::cmd::{ListAllOptions, ListOptions};
+use crate::cmd::version::{ListAllOptions, ListOptions};
 
 impl From<PluginArgs> for ListAllOptions {
   fn from(args: PluginArgs) -> Self {

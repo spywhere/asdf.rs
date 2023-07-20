@@ -4,7 +4,7 @@ use clap::{Args, Subcommand};
 #[command(args_conflicts_with_subcommands = true)]
 pub struct PluginOptions {
   #[command(subcommand)]
-  pub command: Option<PluginCommands>,
+  pub command: PluginCommands,
 }
 
 #[derive(Subcommand, Clone)]
@@ -47,6 +47,17 @@ pub struct PluginListCommandOptions {
   /// Show plugin's git ref
   #[arg(long)]
   pub refs: bool,
+}
+
+use crate::cmd::plugin::ListOptions;
+
+impl From<PluginListCommandOptions> for ListOptions {
+  fn from(args: PluginListCommandOptions) -> Self {
+    Self {
+      urls: args.urls,
+      refs: args.refs,
+    }
+  }
 }
 
 #[derive(Subcommand, Clone)]
