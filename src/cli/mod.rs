@@ -31,7 +31,7 @@ impl From<PluginError> for Exit {
       },
       PluginError::FetchError => Exit {
         exit_code: 1,
-        message: Some("Cannot fetch plugins".to_string())
+        message: Some("Cannot fetch plugins".to_string()),
       },
       PluginError::NotFound(name) => Exit {
         exit_code: 1,
@@ -39,8 +39,11 @@ impl From<PluginError> for Exit {
       },
       PluginError::Corrupted { name, binary } => Exit {
         exit_code: 1,
-        message: Some(format!("Plugin {} is corrupted ({} expected)", name, binary)),
-      }
+        message: Some(format!(
+          "Plugin {} is corrupted ({} expected)",
+          name, binary
+        )),
+      },
     }
   }
 }
@@ -55,8 +58,15 @@ impl From<PackageError> for Exit {
       },
       PackageError::FetchError(name) => Exit {
         exit_code: 1,
-        message: Some(format!("Cannot fetch installed version for {}", name))
-      }
+        message: Some(format!("Cannot fetch installed version for {}", name)),
+      },
+      PackageError::NotFound { plugin, version } => Exit {
+        exit_code: 1,
+        message: Some(format!(
+          "Package version {} of {} plugin cannot be found",
+          version, plugin
+        )),
+      },
     }
   }
 }

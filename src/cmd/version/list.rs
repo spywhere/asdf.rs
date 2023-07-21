@@ -41,11 +41,11 @@ fn list_plugin(
         )),
       }),
       None => Err(PackageError::NoInstallation.into()),
-    }
+    };
   }
 
   for version in versions {
-    stdout!("  {}", version);
+    stdout!("  {}", version.version);
   }
 
   Ok(())

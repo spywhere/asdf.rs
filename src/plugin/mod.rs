@@ -25,15 +25,13 @@ pub struct Plugin {
 }
 
 pub fn plugins(context: &Context) -> Result<Vec<Plugin>, PluginError> {
-  let plugin_dir = util::path::get(
-    &context.data_dir,
-    util::path::CommonPath::Plugin(None),
-  );
+  let plugin_dir =
+    util::path::get(&context.data_dir, util::path::CommonPath::Plugin(None));
 
   let plugin_dir = plugin_dir.ok_or(PluginError::NoPlugin)?;
 
-  let entries = fs::read_dir(plugin_dir)
-    .map_err(|_| PluginError::FetchError)?;
+  let entries =
+    fs::read_dir(plugin_dir).map_err(|_| PluginError::FetchError)?;
 
   let mut plugins: Vec<Plugin> = entries
     .filter_map(|e| e.ok())

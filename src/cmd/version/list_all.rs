@@ -20,6 +20,6 @@ pub fn list_all(
 
   plugin.execute(lua::EntryPoint::Main).map_err(|e| Exit {
     exit_code: 1,
-    message: Some(e.to_string())
+    message: Some(e.to_string()),
   })
 }

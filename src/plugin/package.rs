@@ -6,12 +6,11 @@ use crate::util;
 pub enum PackageError {
   NoInstallation,
   FetchError(String),
+  NotFound { plugin: String, version: String },
 }
 
 pub struct Package {
-  pub(super) data_dir: String,
-  pub plugin: String,
-  pub(super) plugin_dir: PathBuf,
+  pub plugin: super::Plugin,
   pub version: String,
   pub(super) version_dir: PathBuf,
 }
@@ -20,15 +19,15 @@ pub trait PackageVersion {
   fn versions(
     &self,
     prefix: &Option<String>,
-  ) -> Result<Vec<String>, PackageError>;
-  // fn version(&self, version: String) -> Package;
+  ) -> Result<Vec<Package>, PackageError>;
+  fn version(&self, version: String) -> Result<Package, PackageError>;
 }
 
 impl PackageVersion for super::Plugin {
   fn versions(
     &self,
     prefix: &Option<String>,
-  ) -> Result<Vec<String>, PackageError> {
+  ) -> Result<Vec<Package>, PackageError> {
     let name = &self.name;
 
     let install_dir = util::path::get(
@@ -41,7 +40,7 @@ impl PackageVersion for super::Plugin {
 
     let install_dir = install_dir.ok_or(PackageError::NoInstallation)?;
 
-    let entries = fs::read_dir(install_dir)
+    let entries = fs::read_dir(install_dir.clone())
       .map_err(|_| PackageError::FetchError(name.to_string()))?;
 
     let mut versions: Vec<String> = entries
@@ -57,6 +56,35 @@ impl PackageVersion for super::Plugin {
 
     versions.sort();
 
-    Ok(versions)
+    let packages: Vec<Package> = versions
+      .iter()
+      .map(|v| self.version(v.to_string()))
+      .filter_map(|p| p.ok())
+      .collect();
+
+    Ok(packages)
+  }
+
+  fn version(&self, version: String) -> Result<Package, PackageError> {
+    let name = &self.name;
+
+    let install_dir = util::path::get(
+      &self.data_dir,
+      util::path::CommonPath::Install {
+        plugin: name.to_string(),
+        version: Some(version.clone()),
+      },
+    );
+
+    let install_dir = install_dir.ok_or(PackageError::NotFound {
+      plugin: name.to_string(),
+      version: version.clone(),
+    })?;
+
+    Ok(Package {
+      plugin: self.clone(),
+      version: version.to_string(),
+      version_dir: install_dir,
+    })
   }
 }
