@@ -34,6 +34,17 @@ pub struct PluginAddOptions {
   pub git_url: Option<String>,
 }
 
+use crate::cmd::plugin::AddOptions;
+
+impl From<PluginAddOptions> for AddOptions {
+  fn from(args: PluginAddOptions) -> Self {
+    Self {
+      name: args.name,
+      git_url: args.git_url,
+    }
+  }
+}
+
 #[derive(Args, Clone)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct PluginListCommandOptions {
@@ -74,24 +85,32 @@ pub struct PluginRemoveOptions {
   pub name: String,
 }
 
-#[derive(Args, Clone)]
-#[command(args_conflicts_with_subcommands = true)]
-pub struct PluginUpdateCommandOptions {
-  #[command(subcommand)]
-  pub command: Option<PluginUpdateCommands>,
+use crate::cmd::plugin::RemoveOptions;
 
+impl From<PluginRemoveOptions> for RemoveOptions {
+  fn from(args: PluginRemoveOptions) -> Self {
+    Self { name: args.name }
+  }
+}
+
+#[derive(Args, Clone)]
+pub struct PluginUpdateCommandOptions {
   /// Plugin name
   #[arg(value_name = "name")]
-  pub name: String,
+  pub name: Option<String>,
 
   /// Git repository URL
   #[arg(value_name = "git-ref")]
   pub git_ref: Option<String>,
 }
 
-#[derive(Subcommand, Clone)]
-pub enum PluginUpdateCommands {
-  /// List all available plugins on the plugin repository
-  #[command(name = "--all")]
-  All,
+use crate::cmd::plugin::UpdateOptions;
+
+impl From<PluginUpdateCommandOptions> for UpdateOptions {
+  fn from(args: PluginUpdateCommandOptions) -> Self {
+    Self {
+      name: args.name,
+      git_ref: args.git_ref,
+    }
+  }
 }

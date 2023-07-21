@@ -9,50 +9,49 @@ pub enum Commands {
   Plugin(PluginOptions),
 
   /// Show latest stable version
-  #[command()]
-  Latest(LatestCommandOptions),
+  Latest(PackageLatestOptions),
   /// Install a specific version of a package
   #[command()]
-  Install(InstallOptions),
+  Install(PackageInstallOptions),
   /// Remove a specific version of a package
   #[command()]
-  Uninstall(UninstallOptions),
+  Uninstall(PackageUninstallOptions),
 
   /// Display current version set or being used for all packages
   #[command()]
-  Current(CurrentOptions),
+  Current(VersionCurrentOptions),
   /// Display installed versions of a package
   #[command(
     subcommand_negates_reqs = true,
     subcommand_precedence_over_arg = true
   )]
-  List(ListCommandOptions),
+  List(VersionListOptions),
   /// Set the package global version
   #[command()]
-  Global(GlobalOptions),
+  Global(VersionGlobalOptions),
   /// Set the package local version
   #[command()]
-  Local(LocalOptions),
+  Local(VersionLocalOptions),
   /// Set the package version in the current shell session
   #[command()]
-  Shell(ShellOptions),
+  Shell(VersionShellOptions),
 
   /// Display install path for a package
   #[command()]
-  Where(WhereOptions),
+  Where(InstallWhereOptions),
   /// Display the path to an executable
   #[command()]
-  Which(WhichOptions),
+  Which(InstallWhichOptions),
   /// Executes the command shim for current version
   #[command()]
-  Exec(ExecOptions),
+  Exec(InstallExecOptions),
   /// Runs util inside the environment used for command shim execution
   #[command()]
-  Env(EnvOptions),
+  Env(InstallEnvOptions),
   /// Recreate shims for version of a package
   #[command()]
-  Reshim(ReshimOptions),
+  Reshim(InstallReshimOptions),
   /// List plugins and versions that provide a command
   #[command()]
-  ShimVersions(ShimVersionsOptions),
+  ShimVersions(InstallShimVersionsOptions),
 }

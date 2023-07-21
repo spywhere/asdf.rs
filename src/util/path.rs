@@ -63,7 +63,7 @@ pub fn get(data_dir: &String, path: CommonPath) -> Option<PathBuf> {
         path = path.join(plugin)
       }
       path
-    },
+    }
   };
 
   check_exists(dir_path, true)

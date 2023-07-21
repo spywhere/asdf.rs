@@ -1,9 +1,6 @@
 use crate::lua::unwrap_expect;
 
-pub fn load(
-  lua: &mlua::Lua,
-  table: &mlua::Table,
-) -> Result<(), mlua::Error> {
+pub fn load(lua: &mlua::Lua, table: &mlua::Table) -> Result<(), mlua::Error> {
   table.set("split_whitespace", split_whitespace(lua)?)?;
 
   Ok(())

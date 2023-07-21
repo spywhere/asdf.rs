@@ -1,26 +1,40 @@
-use clap::{Args, Subcommand};
+use crate::cli::options::{OptionalPluginArgs, PackageArgs};
 
-use crate::cli::options::{OptionalPluginArgs, PackageArgs, PluginArgs};
+pub type PackageLatestOptions = OptionalPluginArgs;
 
-pub type LatestOptions = PluginArgs;
+use crate::cmd::package::LatestOptions;
 
-#[derive(Args, Clone)]
-#[command(args_conflicts_with_subcommands = true)]
-pub struct LatestCommandOptions {
-  #[command(subcommand)]
-  pub command: Option<LatestCommands>,
-
-  #[command(flatten)]
-  pub latest: LatestOptions,
+impl From<PackageLatestOptions> for LatestOptions {
+  fn from(args: PackageLatestOptions) -> Self {
+    Self {
+      name: args.name,
+      prefix: args.version,
+    }
+  }
 }
 
-#[derive(Subcommand, Clone)]
-pub enum LatestCommands {
-  /// Show latest stable version of all installed packages
-  #[command(name = "--all")]
-  All,
+pub type PackageInstallOptions = OptionalPluginArgs;
+
+use crate::cmd::package::InstallOptions;
+
+impl From<PackageInstallOptions> for InstallOptions {
+  fn from(args: PackageInstallOptions) -> Self {
+    Self {
+      name: args.name,
+      version: args.version,
+    }
+  }
 }
 
-pub type InstallOptions = OptionalPluginArgs;
+pub type PackageUninstallOptions = PackageArgs;
 
-pub type UninstallOptions = PackageArgs;
+use crate::cmd::package::UninstallOptions;
+
+impl From<PackageUninstallOptions> for UninstallOptions {
+  fn from(args: PackageUninstallOptions) -> Self {
+    Self {
+      name: args.name,
+      version: args.version,
+    }
+  }
+}

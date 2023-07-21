@@ -2,17 +2,38 @@ use clap::Args;
 
 use crate::cli::options::{PackageArgs, PluginArgs};
 
-pub type WhereOptions = PluginArgs;
+pub type InstallWhereOptions = PluginArgs;
+
+use crate::cmd::install::WhereOptions;
+
+impl From<InstallWhereOptions> for WhereOptions {
+  fn from(args: InstallWhereOptions) -> Self {
+    Self {
+      plugin: args.name,
+      version: args.version,
+    }
+  }
+}
 
 #[derive(Args, Clone)]
-pub struct WhichOptions {
+pub struct InstallWhichOptions {
   /// Command name
   #[arg(value_name = "command")]
   pub command: String,
 }
 
+use crate::cmd::install::WhichOptions;
+
+impl From<InstallWhichOptions> for WhichOptions {
+  fn from(args: InstallWhichOptions) -> Self {
+    Self {
+      command: args.command,
+    }
+  }
+}
+
 #[derive(Args, Clone)]
-pub struct ExecOptions {
+pub struct InstallExecOptions {
   /// Command name
   #[arg(value_name = "command")]
   pub command: String,
@@ -22,8 +43,19 @@ pub struct ExecOptions {
   pub args: Vec<String>,
 }
 
+use crate::cmd::install::ExecOptions;
+
+impl From<InstallExecOptions> for ExecOptions {
+  fn from(args: InstallExecOptions) -> Self {
+    Self {
+      command: args.command,
+      args: args.args,
+    }
+  }
+}
+
 #[derive(Args, Clone)]
-pub struct EnvOptions {
+pub struct InstallEnvOptions {
   /// Command name
   #[arg(value_name = "command")]
   pub command: String,
@@ -33,11 +65,43 @@ pub struct EnvOptions {
   pub util: String,
 }
 
-pub type ReshimOptions = PackageArgs;
+use crate::cmd::install::EnvOptions;
+
+impl From<InstallEnvOptions> for EnvOptions {
+  fn from(args: InstallEnvOptions) -> Self {
+    Self {
+      command: args.command,
+      util: args.util,
+    }
+  }
+}
+
+pub type InstallReshimOptions = PackageArgs;
+
+use crate::cmd::install::ReshimOptions;
+
+impl From<InstallReshimOptions> for ReshimOptions {
+  fn from(args: InstallReshimOptions) -> Self {
+    Self {
+      plugin: args.name,
+      version: args.version,
+    }
+  }
+}
 
 #[derive(Args, Clone)]
-pub struct ShimVersionsOptions {
+pub struct InstallShimVersionsOptions {
   /// Command name
   #[arg(value_name = "command")]
   pub command: String,
+}
+
+use crate::cmd::install::ShimOptions;
+
+impl From<InstallShimVersionsOptions> for ShimOptions {
+  fn from(args: InstallShimVersionsOptions) -> Self {
+    Self {
+      command: args.command,
+    }
+  }
 }
